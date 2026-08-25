@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AD Presenter - Software de Presentación en Vivo</title>
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #090a0f;
+            --bg-card: #12141d;
+            --bg-card-hover: #181b28;
+            --bg-light: #1c2030;
+            --accent-primary: #6366f1;
+            --accent-glow: rgba(99, 102, 241, 0.35);
+            --accent-secondary: #a855f7;
+            --accent-green: #10b981;
+            --accent-gold: #f59e0b;
+            --accent-cyan: #06b6d4;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-light: rgba(255, 255, 255, 0.15);
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 24px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 20%, rgba(99, 102, 241, 0.12) 0%, transparent 45%),
+                radial-gradient(circle at 85% 60%, rgba(168, 85, 247, 0.1) 0%, transparent 40%);
+        }
+
+        /* Ambient Glow Effect */
+        .ambient-glow {
+            position: absolute;
+            top: -150px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 400px;
+            background: radial-gradient(ellipse, rgba(99, 102, 241, 0.25) 0%, rgba(168, 85, 247, 0.1) 40%, transparent 70%);
+            filter: blur(60px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header / Navbar */
+        header {
+            padding: 24px 0;
+            border-bottom: 1px solid var(--border-color);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(9, 10, 15, 0.85);
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: #fff;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 14px var(--accent-glow);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover {
+            color: #fff;
+        }
+
+        .btn-discord {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #5865F2;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(88, 101, 242, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-discord:hover {
+            background: #4752C4;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(88, 101, 242, 0.45);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 90px 0 60px 0;
+            text-align: center;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            color: #a5b4fc;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .badge i {
+            font-size: 0.75rem;
+            color: var(--accent-primary);
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -1.5px;
+            margin-bottom: 20px;
+            background: linear-gradient(180deg, #ffffff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 680px;
+            margin: 0 auto 36px auto;
+            font-weight: 400;
+        }
+
+        .hero-cta {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: var(--transition);
+            box-shadow: 0 6px 20px var(--accent-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
+        }
+
+        /* App Preview Showcase */
+        .preview-container {
+            margin-top: 50px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 12px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            position: relative;
+        }
+
+        .window-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 14px 14px 0 0;
+            margin-bottom: 8px;
+        }
+
+        .window-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot.red { background: #ef4444; }
+        .dot.yellow { background: #f59e0b; }
+        .dot.green { background: #10b981; }
+
+        .window-title {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* UI Mockup Details */
+        .mockup-ui {
+            background: #0d0e15;
+            border-radius: var(--radius-md);
+            height: 480px;
+            display: flex;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .mock-sidebar {
+            width: 240px;
+            background: #11131c;
+            border-right: 1px solid var(--border-color);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .mock-sidebar-hdr {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .mock-song-item {
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: var(--radius-sm);
+            border-left: 3px solid transparent;
+            font-size: 0.85rem;
+        }
+
+        .mock-song-item.active {
+            background: rgba(99, 102, 241, 0.15);
+            border-left-color: var(--accent-primary);
+            color: #fff;
+        }
+
+        .mock-song-title { font-weight: 600; }
+        .mock-song-meta { font-size: 0.75rem; color: var(--text-muted); }
+
+        .mock-grid {
+            flex: 1;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            align-content: start;
+            overflow-y: auto;
+        }
+
+        .mock-slide {
+            aspect-ratio: 16/9;
+            background: #171a26;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            position: relative;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .mock-slide.active {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+            background: #1e2235;
+        }
+
+        .mock-slide-label {
+            position: absolute;
+            top: 6px;
+            left: 8px;
+            font-size: 0.65rem;
+            color: var(--accent-secondary);
+            font-weight: 700;
+        }
+
+        .mock-preview {
+            width: 280px;
+            background: #11131c;
+            border-left: 1px solid var(--border-color);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .mock-screen {
+            aspect-ratio: 16/9;
+            background: #000;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 12px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-header h2 {
+            font-size: 2.25rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 12px;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+        }
+
+        .grid-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 32px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-light);
+            background: var(--bg-card-hover);
+        }
+
+        .feature-icon {
+            width: 52px;
+            height: 52px;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-primary);
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+        }
+
+        .feature-card.coming-soon-card .feature-icon {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--accent-gold);
+        }
+
+        .feature-card.plugins-card .feature-icon {
+            background: rgba(6, 182, 212, 0.1);
+            color: var(--accent-cyan);
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Tag / Pill */
+        .tag-upcoming {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 50px;
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--accent-gold);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            letter-spacing: 0.5px;
+        }
+
+        .tag-plugins {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 50px;
+            background: rgba(6, 182, 212, 0.15);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            letter-spacing: 0.5px;
+        }
+
+        /* Support / Discord Banner */
+        .support-banner {
+            margin: 40px 0 100px 0;
+            background: linear-gradient(135deg, rgba(88, 101, 242, 0.15) 0%, rgba(99, 102, 241, 0.05) 100%);
+            border: 1px solid rgba(88, 101, 242, 0.3);
+            border-radius: var(--radius-lg);
+            padding: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 32px;
+            flex-wrap: wrap;
+        }
+
+        .support-content h3 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .support-content p {
+            color: var(--text-muted);
+            max-width: 550px;
+            font-size: 1rem;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 40px 0;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .hero h1 { font-size: 2.5rem; }
+            .mockup-ui { height: auto; flex-direction: column; }
+            .mock-sidebar, .mock-preview { width: 100%; }
+            .mock-grid { grid-template-columns: repeat(2, 1fr); }
+            .support-banner { text-align: center; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-glow"></div>
+
+    <!-- Header / Navbar -->
+    <header>
+        <div class="container">
+            <nav>
+                <a href="#" class="logo">
+                    <div class="logo-icon">
+                        <i class="fa-solid fa-cross"></i>
+                    </div>
+                    <span>AD Presenter</span>
+                </a>
+                <ul class="nav-links">
+                    <li><a href="#caracteristicas">Características</a></li>
+                    <li><a href="#proximamente">Próximamente</a></li>
+                    <li>
+                        <a href="https://discord.gg/Azs3bb8BF" target="_blank" class="btn-discord">
+                            <i class="fa-brands fa-discord"></i> Soporte Discord
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="badge">
+                <i class="fa-solid fa-sparkles"></i> Software de Proyección Multimedia para Iglesias
+            </div>
+            <h1>Potencia tus Servicios y Alabanzas en Vivo</h1>
+            <p>Una solución profesional, rápida e intuitiva para proyectar letras, videos, imágenes y documentos en pantalla gigante de forma fluida.</p>
+            <div class="hero-cta">
+                <a href="#caracteristicas" class="btn-primary">
+                    <i class="fa-solid fa-layer-group"></i> Explorar Funciones
+                </a>
+                <a href="https://discord.gg/Azs3bb8BF" target="_blank" class="btn-discord" style="padding: 14px 28px; font-size: 1rem;">
+                    <i class="fa-brands fa-discord"></i> Únete a la Comunidad
+                </a>
+            </div>
+
+            <!-- Interactive UI Mockup Showcase -->
+            <div class="preview-container">
+                <div class="window-bar">
+                    <div class="window-dots">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                    </div>
+                    <div class="window-title">AD Presenter v1.0 — Modulo de Control</div>
+                    <div></div>
+                </div>
+                <div class="mockup-ui">
+                    <!-- Sidebar Mockup -->
+                    <div class="mock-sidebar">
+                        <div class="mock-sidebar-hdr">
+                            <span>Canciones Servicio</span>
+                            <i class="fa-solid fa-plus"></i>
+                        </div>
+                        <div class="mock-song-item active">
+                            <div class="mock-song-title">La Bondad de Dios</div>
+                            <div class="mock-song-meta">Tono: G · 72 BPM</div>
+                        </div>
+                        <div class="mock-song-item">
+                            <div class="mock-song-title">Santo en el Cielo</div>
+                            <div class="mock-song-meta">Tono: D · 120 BPM</div>
+                        </div>
+                        <div class="mock-song-item">
+                            <div class="mock-song-title">Cuan Grande es Él</div>
+                            <div class="mock-song-meta">Tono: A · 80 BPM</div>
+                        </div>
+                    </div>
+                    <!-- Grid Mockup -->
+                    <div class="mock-grid">
+                        <div class="mock-slide active">
+                            <span class="mock-slide-label">[Verso 1]</span>
+                            Te amo Dios, Tu misericordia nunca me falla
+                        </div>
+                        <div class="mock-slide">
+                            <span class="mock-slide-label">[Coro]</span>
+                            En mi vida has sido bueno, en mi vida has sido fiel
+                        </div>
+                        <div class="mock-slide">
+                            <span class="mock-slide-label">[Puente]</span>
+                            Tu presencia me acompaña a donde voy
+                        </div>
+                    </div>
+                    <!-- Preview Mockup -->
+                    <div class="mock-preview">
+                        <div class="mock-sidebar-hdr">
+                            <span>Vista Previa Proyector</span>
+                        </div>
+                        <div class="mock-screen">
+                            Te amo Dios,<br>Tu misericordia nunca me falla
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Features Section -->
+    <section class="features" id="caracteristicas">
+        <div class="container">
+            <div class="section-header">
+                <h2>Diseñado para el Control Total en Vivo</h2>
+                <p>Herramientas avanzadas pensadas para los equipos de medios y producción en iglesias.</p>
+            </div>
+
+            <div class="grid-features">
+                <!-- Feature 1 -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fa-solid fa-music"></i>
+                    </div>
+                    <h3>Biblioteca de Canciones</h3>
+                    <p>Crea, edita y organiza tus alabanzas fácilmente. Ajusta tono, BPM y líneas por diapositiva con formato automático inteligente.</p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fa-solid fa-photo-film"></i>
+                    </div>
+                    <h3>Gestión de Medios</h3>
+                    <p>Soporte completo para imágenes y videos de fondo. Aplica fondos dinámicos en tiempo real o proyéctalos directamente.</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fa-solid fa-file-pdf"></i>
+                    </div>
+                    <h3>Visor de Presentaciones PDF</h3>
+                    <p>Importa archivos PDF para prédicas, anuncios o presentaciones de diapositivas con navegación rápida entre páginas.</p>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fa-solid fa-file-import"></i>
+                    </div>
+                    <h3>Importación y Exportación</h3>
+                    <p>Compatibilidad total con formatos JSON, TXT y CSV para respaldar o compartir tu catálogo musical en segundos.</p>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fa-solid fa-spell-check"></i>
+                    </div>
+                    <h3>Corrector Ortográfico Nativo</h3>
+                    <p>Sugerencias ortográficas integradas en español para garantizar letras impecables y sin errores durante el servicio.</p>
+                </div>
+
+                <!-- Upcoming Feature 6 -->
+                <div class="feature-card coming-soon-card" id="proximamente">
+                    <div class="feature-icon">
+                        <i class="fa-solid fa-mobile-screen-button"></i>
+                    </div>
+                    <h3>
+                        Control Remoto Web
+                        <span class="tag-upcoming">Próximamente</span>
+                    </h3>
+                    <p>Servidor HTTP + Socket.io integrado para controlar las diapositivas y el proyector de forma remota desde cualquier smartphone o tablet en la red local.</p>
+                </div>
+
+                <!-- Upcoming Feature 7: Plugin System -->
+                <div class="feature-card plugins-card">
+                    <div class="feature-icon">
+                        <i class="fa-solid fa-puzzle-piece"></i>
+                    </div>
+                    <h3>
+                        Ecosistema de Plugins
+                        <span class="tag-plugins">Post-Lanzamiento</span>
+                    </h3>
+                    <p>Tras la versión oficial (23 de agosto), añadiremos una arquitectura de complementos personalizados según las necesidades específicas de cada iglesia.</p>
+                </div>
+            </div>
+
+            <!-- Support Banner -->
+            <div class="support-banner">
+                <div class="support-content">
+                    <h3>¿Necesitas Ayuda o Tienes Sugerencias?</h3>
+                    <p>Únete a nuestra comunidad oficial en Discord. Obtén soporte técnico, reporta errores y mantente al tanto de las últimas actualizaciones.</p>
+                </div>
+                <a href="https://discord.gg/Azs3bb8BF" target="_blank" class="btn-discord" style="padding: 16px 32px; font-size: 1.05rem;">
+                    <i class="fa-brands fa-discord"></i> Unirse al Servidor de Soporte
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 AD Presenter. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
