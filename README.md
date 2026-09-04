@@ -4,6 +4,7 @@ Software de Proyección Multimedia para Iglesias
 AD Presenter es una solución profesional, rápida e intuitiva diseñada para proyectar letras, videos, imágenes y documentos en pantalla gigante de forma fluida durante servicios y alabanzas en vivo.
 
 🚀 Características Principales
+
 📚 Biblioteca de Canciones
 Crea, edita y organiza tu repertorio de alabanzas fácilmente. Incluye ajustes de tono, BPM y líneas por diapositiva con formato automático inteligente.
 
